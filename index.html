@@ -870,7 +870,7 @@ function updateQtyMax() {
 
 function changeQty(delta) {
   const max = getFilteredQuestions().length;
-  qtyNum = Math.max(1, Math.min(max, qtyNum + delta));
+  qtyNum = Math.max(0, Math.min(max, qtyNum + delta));
   document.getElementById('qtyNum').textContent = qtyNum;
   updateScorePreview();
 }
