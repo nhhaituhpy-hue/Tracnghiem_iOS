@@ -7,7 +7,7 @@
       "VOR DME",
       "Quy định chung"
     ],
-    "generated": "2026-04-19T03:15:21.092Z"
+    "generated": "2026-04-20T02:36:23.129Z"
   },
   "questions": [
     {
@@ -3980,19 +3980,19 @@
       "answers": [
         {
           "label": "A",
-          "text": "1e-05"
+          "text": "0.00001"
         },
         {
           "label": "B",
-          "text": "2e-05"
+          "text": "0.00002"
         },
         {
           "label": "C",
-          "text": "3e-05"
+          "text": "0.00003"
         },
         {
           "label": "D",
-          "text": "5e-05"
+          "text": "0.00005"
         }
       ],
       "correct": "B",
@@ -4005,19 +4005,19 @@
       "answers": [
         {
           "label": "A",
-          "text": "1e-05"
+          "text": "0.00001"
         },
         {
           "label": "B",
-          "text": "2e-05"
+          "text": "0.00002"
         },
         {
           "label": "C",
-          "text": "3e-05"
+          "text": "0.00003"
         },
         {
           "label": "D",
-          "text": "4e-05"
+          "text": "0.00005"
         }
       ],
       "correct": "B",
