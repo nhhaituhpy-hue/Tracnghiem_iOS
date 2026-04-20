@@ -357,7 +357,7 @@ body {
   font-size: 4rem; font-weight: 800; line-height: 1;
   font-family: 'IBM Plex Mono', monospace;
   background: linear-gradient(135deg, var(--yellow), var(--orange));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
 }
 .score-max { font-size: 1.4rem; color: var(--muted); font-family: 'IBM Plex Mono', monospace; padding-bottom: 6px; }
 
@@ -519,7 +519,7 @@ body {
       <div class="setting-label">// Số câu / lần thi</div>
       <div class="qty-control">
         <button class="qty-btn" onclick="changeQty(-5)">−</button>
-        <div class="qty-num" id="qtyNum">30</div>
+        <div class="qty-num" id="qtyNum">50</div>
         <button class="qty-btn" onclick="changeQty(5)">+</button>
       </div>
       <div class="qty-sub" id="qtyMax">/ — câu có sẵn</div>
@@ -666,7 +666,7 @@ let wrong = 0;
 let totalPoints = 0;
 let userAnswers = [];
 let selectedTopics = ['__all__'];
-let qtyNum = 20;
+let qtyNum = 50;
 let shuffle = true;
 let pointsPerCorrect = 1;
 let isCustomScore = false;
