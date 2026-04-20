@@ -668,7 +668,7 @@ let userAnswers = [];
 let selectedTopics = ['__all__'];
 let qtyNum = 50;
 let shuffle = true;
-let pointsPerCorrect = 1;
+let pointsPerCorrect = 2;
 let isCustomScore = false;
 let startTime = null;
 
@@ -806,7 +806,7 @@ function getFilteredQuestions() {
 
 function updateQtyMax() {
   const max = getFilteredQuestions().length;
-  qtyNum = Math.min(qtyNum || 20, max) || Math.min(20, max);
+  qtyNum = Math.min(qtyNum || 50, max) || Math.min(50, max);
   document.getElementById('qtyNum').textContent = qtyNum;
   document.getElementById('qtyMax').textContent = `/ ${max} câu có sẵn`;
 }
