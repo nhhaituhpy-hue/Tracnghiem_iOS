@@ -519,7 +519,7 @@ body {
       <div class="setting-label">// Số câu / lần thi</div>
       <div class="qty-control">
         <button class="qty-btn" onclick="changeQty(-5)">−</button>
-        <div class="qty-num" id="qtyNum">20</div>
+        <div class="qty-num" id="qtyNum">50</div>
         <button class="qty-btn" onclick="changeQty(5)">+</button>
       </div>
       <div class="qty-sub" id="qtyMax">/ — câu có sẵn</div>
@@ -537,18 +537,15 @@ body {
   <div class="score-presets">
     <div class="setting-label">// Điểm mỗi câu đúng</div>
     <div class="preset-row" id="presetRow">
-      <div class="preset-chip active" onclick="selectPreset(this,1)">1 điểm</div>
-      <div class="preset-chip" onclick="selectPreset(this,2)">2 điểm</div>
-      <div class="preset-chip" onclick="selectPreset(this,5)">5 điểm</div>
-      <div class="preset-chip" onclick="selectPreset(this,10)">10 điểm</div>
+      <div class="preset-chip active" onclick="selectPreset(this,2)">2 điểm</div>
       <div class="preset-chip" onclick="selectPreset(this,'custom')">Tuỳ chỉnh</div>
     </div>
     <div class="custom-score-row" id="customScoreRow" style="display:none">
       <label>Nhập điểm / câu đúng:</label>
-      <input type="number" id="customScoreInput" value="1" min="1" max="1000" oninput="onCustomScore()">
+      <input type="number" id="customScoreInput" value="1" min="1" max="100" oninput="onCustomScore()">
     </div>
     <div class="score-preview" id="scorePreview">
-      Tổng điểm tối đa: <strong id="previewMax">20</strong> điểm &nbsp;|&nbsp; Đạt (≥75%): <strong id="previewPass">15</strong> điểm
+      Tổng điểm tối đa: <strong id="previewMax">100</strong> điểm &nbsp;|&nbsp; Đạt (≥70%): <strong id="previewPass">70</strong> điểm
     </div>
   </div>
 
@@ -850,7 +847,7 @@ function onCustomScore() {
 
 function updateScorePreview() {
   const maxScore = qtyNum * pointsPerCorrect;
-  const passScore = Math.ceil(maxScore * 0.75);
+  const passScore = Math.ceil(maxScore * 0.70);
   document.getElementById('previewMax').textContent = maxScore;
   document.getElementById('previewPass').textContent = passScore;
 }
