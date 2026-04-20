@@ -479,6 +479,43 @@ body {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-text { color: var(--muted); font-size: 0.88rem; }
+
+/* ===== UPDATE BANNER ===== */
+#updateBanner {
+  display: none;
+  position: fixed; top: calc(var(--safe-top) + 12px);
+  left: 12px; right: 12px;
+  background: linear-gradient(135deg, #1a3a5c, #0f2a48);
+  border: 1px solid var(--teal);
+  border-radius: 14px; padding: 14px 16px;
+  z-index: 10000;
+  box-shadow: 0 4px 24px rgba(0,180,216,0.25);
+  animation: slideDown 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  display: none; align-items: center; gap: 12px;
+}
+#updateBanner.show { display: flex; }
+@keyframes slideDown {
+  from { transform: translateY(-120%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.update-icon { font-size: 1.5rem; flex-shrink: 0; }
+.update-body { flex: 1; }
+.update-body strong { font-size: 0.9rem; display: block; margin-bottom: 2px; color: var(--text); }
+.update-body span   { font-size: 0.78rem; color: var(--muted); }
+.update-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.btn-update-reload {
+  background: var(--teal); border: none; border-radius: 10px;
+  color: #0A1628; font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 0.82rem; font-weight: 700; padding: 8px 14px; cursor: pointer;
+  white-space: nowrap;
+}
+.btn-update-reload:active { opacity: 0.85; }
+.btn-update-dismiss {
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 10px; color: var(--muted);
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 0.82rem; padding: 8px 10px; cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -486,6 +523,19 @@ body {
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
   <div class="loading-text">Đang tải dữ liệu...</div>
+</div>
+
+<!-- Update banner: hiện khi SW mới activate -->
+<div id="updateBanner">
+  <div class="update-icon">🔄</div>
+  <div class="update-body">
+    <strong>Có giao diện mới!</strong>
+    <span>Tải lại để cập nhật bản mới nhất</span>
+  </div>
+  <div class="update-actions">
+    <button class="btn-update-reload" onclick="reloadForUpdate()">Tải lại</button>
+    <button class="btn-update-dismiss" onclick="dismissUpdate()">Bỏ qua</button>
+  </div>
 </div>
 
 <!-- ===================== HOME SCREEN ===================== -->
@@ -683,9 +733,16 @@ async function init() {
 
 async function loadQuestions() {
   try {
+    // Thử fetch từ mạng trước, nếu không được thì dùng cache (offline)
     const url = new URL('./questions.json', window.location.href);
-    const res = await fetch(url.href + '?v=' + Date.now(), { cache: 'no-store' });
-    if (!res.ok) throw new Error('Not found');
+    let res;
+    try {
+      res = await fetch(url.href, { cache: 'no-cache' });
+    } catch (networkErr) {
+      // Không có mạng → thử lấy từ cache của Service Worker
+      res = await fetch(url.href, { cache: 'force-cache' });
+    }
+    if (!res || !res.ok) throw new Error('Not found');
     const data = await res.json();
     applyQuestionsData(data);
   } catch(e) {
@@ -1101,10 +1158,65 @@ init();
 </script>
 
 <script>
+// ===== SERVICE WORKER + AUTO UPDATE =====
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+    navigator.serviceWorker.register('sw.js').then(reg => {
+
+      // Khi phát hiện SW mới đang chờ (waiting) → hỏi người dùng
+      const checkWaiting = () => {
+        if (reg.waiting) showUpdateBanner();
+      };
+
+      // SW mới vừa được tìm thấy
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        if (!newWorker) return;
+        newWorker.addEventListener('statechange', () => {
+          // SW mới đã install xong, đang chờ activate
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            showUpdateBanner();
+          }
+        });
+      });
+
+      // Kiểm tra ngay lúc load (phòng trường hợp đã có waiting từ trước)
+      checkWaiting();
+
+      // Định kỳ check update mỗi 60 giây
+      setInterval(() => reg.update(), 60 * 1000);
+
+    }).catch(() => {});
+
+    // Lắng nghe message 'SW_UPDATED' từ Service Worker khi activate xong
+    navigator.serviceWorker.addEventListener('message', event => {
+      if (event.data && event.data.type === 'SW_UPDATED') {
+        // SW mới đã activate (đã xóa cache cũ) → reload để load file mới
+        window.location.reload();
+      }
+    });
   });
+}
+
+function showUpdateBanner() {
+  const banner = document.getElementById('updateBanner');
+  if (banner) banner.classList.add('show');
+}
+
+function reloadForUpdate() {
+  // Yêu cầu SW đang waiting kích hoạt ngay
+  navigator.serviceWorker.getRegistration().then(reg => {
+    if (reg && reg.waiting) {
+      reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+    }
+    // Reload sau 300ms để SW kịp activate
+    setTimeout(() => window.location.reload(true), 300);
+  });
+}
+
+function dismissUpdate() {
+  const banner = document.getElementById('updateBanner');
+  if (banner) banner.classList.remove('show');
 }
 </script>
 </body>
